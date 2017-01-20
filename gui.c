@@ -79,12 +79,21 @@ void afficher_score(GtkWidget *view, const struct partie *partie) {
 
 void gui_nouvelle_partie(struct gui_nouvelle_partie_data *data) {
 	struct partie * partie = *(data->partie);
-	g_print("Créé une nouvelle partie\n");
 	desallouer_partie(partie);
 
 	partie = nouvelle_partie();
 
 	*(data->partie) = partie;
+
+	GtkBuilder * builder;
+	GObject *button;
+	GObject *window;
+	builder = gtk_builder_new();
+	gtk_builder_add_from_file(builder, "ecran_nouvelle_partie.ui", NULL);
+
+	window = gtk_builder_get_object(builder, "window");
+	button = gtk_builder_get_object(builder, "button_valider_nouvelle_partie");
+	g_signal_connect_swapped(button, "clicked", G_CALLBACK (gtk_widget_destroy), window);
 
 	set_nb_joueurs(partie, 4);
 	set_nom_joueur(partie, "nom1", 0);
@@ -107,7 +116,7 @@ int main (int argc, char **argv)
 	gtk_init(&argc, &argv);
 
 	builder = gtk_builder_new ();
-	gtk_builder_add_from_file(builder, "builder.ui", NULL);
+	gtk_builder_add_from_file(builder, "ecran_principal.ui", NULL);
 
 	window = gtk_builder_get_object(builder, "window");
 	g_signal_connect(window, "destroy", G_CALLBACK (gtk_main_quit), NULL);
