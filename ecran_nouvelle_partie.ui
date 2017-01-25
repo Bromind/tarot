@@ -8,11 +8,39 @@
 					<object class="GtkGrid">
 						<property name="visible">True</property>
 						<child>
-							<object class="GtkEntry">
+							<object class="GtkEntry" id="nom1">
 								<property name="visible">True</property>
 							</object>
 							<packing>
 								<property name="top-attach">0</property>
+								<property name="left-attach">0</property>
+							</packing>
+						</child>
+						<child>
+							<object class="GtkEntry" id="nom2">
+								<property name="visible">True</property>
+							</object>
+							<packing>
+								<property name="top-attach">1</property>
+								<property name="left-attach">0</property>
+							</packing>
+						</child>
+						<child>
+							<object class="GtkEntry" id="nom3">
+								<property name="visible">True</property>
+							</object>
+							<packing>
+								<property name="top-attach">2</property>
+								<property name="left-attach">0</property>
+							</packing>
+						</child>
+						<child>
+							<object class="GtkEntry" id="nom4">
+								<property name="visible">True</property>
+							</object>
+							<packing>
+								<property name="top-attach">3</property>
+								<property name="left-attach">0</property>
 							</packing>
 						</child>
 					</object>

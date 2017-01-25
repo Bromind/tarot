@@ -1,4 +1,5 @@
 #include <gtk/gtk.h>
+#include <string.h>
 #include <stdlib.h>
 #include "partie.h"
 
@@ -77,6 +78,59 @@ void afficher_score(GtkWidget *view, const struct partie *partie) {
 	g_object_unref(list_model);
 }
 
+
+struct gui_nouvelle_partie_creee_data {
+	struct partie ** partie;
+	GtkBuilder * builder;
+	GtkWidget * view;
+};
+
+void gui_nouvelle_partie_creee(struct gui_nouvelle_partie_creee_data * data) {
+	struct partie * partie = *(data->partie);
+	GtkBuilder *builder = data->builder;
+	GtkEntry *entry;
+	char* nom = NULL;
+	set_nb_joueurs(partie, 4);
+
+	entry = GTK_ENTRY(gtk_builder_get_object(builder, "nom1"));
+	nom = malloc(sizeof(char) * (1 + gtk_entry_get_text_length(entry)));
+	if(nom == NULL) {
+		fprintf(stderr, "Erreur d'allocation mémoire");
+	}
+	strcpy(nom, gtk_entry_get_text(entry));
+	set_nom_joueur(partie, nom, 0);
+
+	entry = GTK_ENTRY(gtk_builder_get_object(builder, "nom2"));
+	nom = malloc(sizeof(char) * (1 + gtk_entry_get_text_length(entry)));
+	if(nom == NULL) {
+		fprintf(stderr, "Erreur d'allocation mémoire");
+	}
+	strcpy(nom, gtk_entry_get_text(entry));
+	set_nom_joueur(partie, nom, 1);
+
+	entry = GTK_ENTRY(gtk_builder_get_object(builder, "nom3"));
+	nom = malloc(sizeof(char) * (1 + gtk_entry_get_text_length(entry)));
+	if(nom == NULL) {
+		fprintf(stderr, "Erreur d'allocation mémoire");
+	}
+	strcpy(nom, gtk_entry_get_text(entry));
+	set_nom_joueur(partie, nom, 2);
+
+	entry = GTK_ENTRY(gtk_builder_get_object(builder, "nom4"));
+	nom = malloc(sizeof(char) * (1 + gtk_entry_get_text_length(entry)));
+	if(nom == NULL) {
+		fprintf(stderr, "Erreur d'allocation mémoire");
+	}
+	strcpy(nom, gtk_entry_get_text(entry));
+	set_nom_joueur(partie, nom, 3);
+
+	afficher_score(data->view, partie);
+
+	GtkWidget *window = GTK_WIDGET(gtk_builder_get_object(builder, "window"));
+	gtk_widget_destroy(window);
+	free(data);
+}
+
 void gui_nouvelle_partie(struct gui_nouvelle_partie_data *data) {
 	struct partie * partie = *(data->partie);
 	desallouer_partie(partie);
@@ -87,21 +141,17 @@ void gui_nouvelle_partie(struct gui_nouvelle_partie_data *data) {
 
 	GtkBuilder * builder;
 	GObject *button;
-	GObject *window;
 	builder = gtk_builder_new();
 	gtk_builder_add_from_file(builder, "ecran_nouvelle_partie.ui", NULL);
 
-	window = gtk_builder_get_object(builder, "window");
 	button = gtk_builder_get_object(builder, "button_valider_nouvelle_partie");
-	g_signal_connect_swapped(button, "clicked", G_CALLBACK (gtk_widget_destroy), window);
 
-	set_nb_joueurs(partie, 4);
-	set_nom_joueur(partie, "nom1", 0);
-	set_nom_joueur(partie, "nom2", 1);
-	set_nom_joueur(partie, "nom3", 2);
-	set_nom_joueur(partie, "nom4", 3);
+	struct gui_nouvelle_partie_creee_data *n_p_c_data = malloc(sizeof(struct gui_nouvelle_partie_creee_data));
+	n_p_c_data->partie = data->partie;
+	n_p_c_data->builder = builder;
+	n_p_c_data->view = data->view;
 
-	afficher_score(data->view, partie);
+	g_signal_connect_swapped(button, "clicked", G_CALLBACK (gui_nouvelle_partie_creee), n_p_c_data);
 }
 
 int main (int argc, char **argv)
