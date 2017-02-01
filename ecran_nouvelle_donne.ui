@@ -1,0 +1,78 @@
+<interface>
+	<object id="window" class="GtkWindow">
+		<property name="visible">True</property>
+		<child>
+			<object class="GtkVBox">
+				<property name="visible">True</property>
+				<child>
+					<object class="GtkGrid">
+						<property name="visible">True</property>
+						<child>
+							<object class="GtkComboBoxText" id="enchere">
+								<property name="visible">True</property>
+								<items>
+									<item id="prise">Prise</item>
+									<item id="garde">Garde</item>
+									<item id="sans">Garde sans le chien</item>
+									<item id="contre">Garde contre le chien</item>
+								</items>
+							</object>
+							<packing>
+								<property name="top-attach">0</property>
+								<property name="left-attach">0</property>
+							</packing>
+						</child>
+						<child>
+							<object class="GtkComboBoxText" id="petit">
+								<property name="visible">True</property>
+								<items>
+									<item id="sans-petit">Sans prime</item>
+									<item id="petit-attaque">Petit au bout pour l'attaque</item>
+									<item id="petit-defense">Petit au bout pour la defense</item>
+								</items>
+							</object>
+							<packing>
+								<property name="top-attach">1</property>
+								<property name="left-attach">0</property>
+							</packing>
+						</child>
+						<child>
+							<object class="GtkComboBoxText" id="poignee">
+								<property name="visible">True</property>
+								<items>
+									<item id="sans_poignee">Sans prime</item>
+									<item id="simple_attaque">Simple poignée pour l'attaque</item>
+									<item id="double_attaque">Double poignée pour l'attaque</item>
+									<item id="triple_attaque">Triple poignée pour l'attaque</item>
+									<item id="simple_defense">Simple poignée pour la defense</item>
+									<item id="double_defense">Double poignée pour la defense</item>
+									<item id="triple_defense">Triple poignée pour la defense</item>
+								</items>
+							</object>
+							<packing>
+								<property name="top-attach">2</property>
+								<property name="left-attach">0</property>
+							</packing>
+						</child>
+					</object>
+				</child>
+				<child>
+
+					<object class="GtkHButtonBox">
+						<property name="visible">True</property>
+						<property name="layout-style">GTK_BUTTONBOX_CENTER</property>
+						<child>
+							<object id="button_valider_nouvelle_donne" class="GtkButton">
+								<property name="label">Ajouter la Donne</property>
+								<property name="visible">True</property>
+							</object>
+						</child>
+					</object>
+					<packing>
+						<property name="pack_type">GTK_PACK_END</property>
+					</packing>
+				</child>
+			</object>
+		</child>
+	</object>
+</interface>

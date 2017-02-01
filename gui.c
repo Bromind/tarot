@@ -6,13 +6,58 @@
 struct gui_nouvelle_donne_data {
 	struct partie ** partie;
 	GtkTreeView * view;
-	GtkWindow * parent;
+	GtkWindow* parent;
+};
+
+struct gui_nouvelle_donne_creee_data {
+	GtkTreeView* view;
+	struct partie ** partie;
+	GtkWidget * parent;
 };
 
 struct gui_nouvelle_partie_data {
 	struct partie ** partie;
 	GtkWidget * view;
 };
+
+struct gui_nouvelle_partie_creee_data {
+	struct partie ** partie;
+	GtkBuilder * builder;
+	GtkWidget * view;
+};
+
+void gui_nouvelle_donne_creee(struct gui_nouvelle_donne_creee_data *data) {
+	struct partie * partie = *(data->partie);
+	struct donne * donne = malloc(sizeof(struct donne));
+	donne->enchere = PRISE;
+	donne->prime = RIEN;
+	donne->primes = NULL;
+	donne->nb_primes = 0;
+	donne->nb_bouts = 0;
+	donne->score = 0;
+	donne->preneur = 0;
+	donne->donne_suivante = NULL;
+
+	nouvelle_donne(partie, donne);
+
+	GtkListStore * model = GTK_LIST_STORE(gtk_tree_view_get_model(data->view));
+	GtkTreeIter iter;
+	gtk_list_store_append(model, &iter);
+
+	int i;
+	int valeur = valeur_donne(*donne);
+	for(i = 0; i < partie->nb_joueurs; i++) {
+		gint points_joueurs;
+		if(i == donne->preneur) {
+			points_joueurs = 3*valeur;
+		} else {
+			points_joueurs = -1*valeur;
+		}
+		gtk_list_store_set(model, &iter, i, points_joueurs, -1);
+	}
+
+	gtk_widget_destroy(data->parent);
+}
 
 void gui_nouvelle_donne(const struct gui_nouvelle_donne_data * data) {
 	struct partie * partie = *(data->partie);
@@ -21,32 +66,23 @@ void gui_nouvelle_donne(const struct gui_nouvelle_donne_data * data) {
 		gtk_dialog_run(GTK_DIALOG(dialog));
 		gtk_widget_destroy(dialog);
 	} else {
-		struct donne * donne = malloc(sizeof(struct donne));
-		donne->enchere = PRISE;
-		donne->prime = RIEN;
-		donne->primes = NULL;
-		donne->nb_primes = 0;
-		donne->nb_bouts = 0;
-		donne->score = 0;
-		donne->preneur = 0;
-		donne->donne_suivante = NULL;
+		GtkBuilder *builder;
+		GObject * button;
+		GObject * window;
 
-		nouvelle_donne(partie, donne);
+		builder = gtk_builder_new();
+		gtk_builder_add_from_file(builder, "ecran_nouvelle_donne.ui", NULL);
+		button = gtk_builder_get_object(builder, "button_valider_nouvelle_donne");
+		window = gtk_builder_get_object(builder, "window");
 
-		GtkListStore * model = GTK_LIST_STORE(gtk_tree_view_get_model(data->view));
-		GtkTreeIter iter;
-		gtk_list_store_append(model, &iter);
-		
-		int i;
-		int valeur = valeur_donne(*donne);
-		for(i = 0; i < partie->nb_joueurs; i++) {
-			gint points_joueurs;
-			if(i == donne->preneur) {
-				points_joueurs = 3*valeur;
-			} else {
-				points_joueurs = -1*valeur;
-			}
-			gtk_list_store_set(model, &iter, i, points_joueurs, -1);
+		struct gui_nouvelle_donne_creee_data *n_d_c_data = malloc(sizeof(struct gui_nouvelle_donne_creee_data));
+		if(n_d_c_data == NULL) {
+			fprintf(stderr, "Erreur d'allocation mémoire");
+		} else {
+			n_d_c_data->view = data->view;
+			n_d_c_data->partie = data->partie;
+			n_d_c_data->parent = GTK_WIDGET(window);
+			g_signal_connect_swapped(button, "clicked", G_CALLBACK(gui_nouvelle_donne_creee), n_d_c_data);
 		}
 	}
 }
@@ -77,13 +113,6 @@ void afficher_score(GtkWidget *view, const struct partie *partie) {
 	gtk_tree_view_set_model(GTK_TREE_VIEW(view), GTK_TREE_MODEL(list_model));
 	g_object_unref(list_model);
 }
-
-
-struct gui_nouvelle_partie_creee_data {
-	struct partie ** partie;
-	GtkBuilder * builder;
-	GtkWidget * view;
-};
 
 void gui_nouvelle_partie_creee(struct gui_nouvelle_partie_creee_data * data) {
 	struct partie * partie = *(data->partie);
