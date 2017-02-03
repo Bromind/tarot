@@ -10,6 +10,7 @@
 						<child>
 							<object class="GtkComboBoxText" id="enchere">
 								<property name="visible">True</property>
+								<property name="active">0</property>
 								<items>
 									<item id="prise">Prise</item>
 									<item id="garde">Garde</item>
@@ -25,6 +26,7 @@
 						<child>
 							<object class="GtkComboBoxText" id="petit">
 								<property name="visible">True</property>
+								<property name="active">0</property>
 								<items>
 									<item id="sans-petit">Sans prime</item>
 									<item id="petit-attaque">Petit au bout pour l'attaque</item>
@@ -39,6 +41,7 @@
 						<child>
 							<object class="GtkComboBoxText" id="poignee">
 								<property name="visible">True</property>
+								<property name="active">0</property>
 								<items>
 									<item id="sans_poignee">Sans prime</item>
 									<item id="simple_attaque">Simple poignée pour l'attaque</item>
@@ -51,6 +54,22 @@
 							</object>
 							<packing>
 								<property name="top-attach">2</property>
+								<property name="left-attach">0</property>
+							</packing>
+						</child>
+						<child>
+							<object class="GtkComboBoxText" id="chelem">
+								<property name="visible">True</property>
+								<property name="active">0</property>
+								<items>
+									<item id="sans_chelem">Sans chelem</item>
+									<item id="chelem_annonce_passe">Chelem annoncé et passé</item>
+									<item id="chelem_annonce_chute">Chelem annoncé et chuté</item>
+									<item id="chelem_non_annonce">Chelem non annoncé</item>
+								</items>
+							</object>
+							<packing>
+								<property name="top-attach">3</property>
 								<property name="left-attach">0</property>
 							</packing>
 						</child>

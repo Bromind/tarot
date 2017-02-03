@@ -13,6 +13,7 @@ struct gui_nouvelle_donne_creee_data {
 	GtkTreeView* view;
 	struct partie ** partie;
 	GtkWidget * parent;
+	GtkBuilder * builder;
 };
 
 struct gui_nouvelle_partie_data {
@@ -26,16 +27,95 @@ struct gui_nouvelle_partie_creee_data {
 	GtkWidget * view;
 };
 
+enum enchere get_enchere(GtkBuilder * builder) {
+	GObject * combo = gtk_builder_get_object(builder, "enchere");
+	gint active = gtk_combo_box_get_active(GTK_COMBO_BOX(combo));
+	switch(active) {
+		case 0: return PRISE;
+		case 1: return GARDE;
+		case 2: return GARDE_SANS;
+		case 3: return GARDE_CONTRE;
+		default: {
+				 fprintf(stderr, "Erreur d'enchere");
+				 return PRISE;
+			 }
+	}
+}
+
+enum prime_multipliable get_prime_multipliable(GtkBuilder * builder) {
+	GObject * combo = gtk_builder_get_object(builder, "petit");
+	gint active = gtk_combo_box_get_active(GTK_COMBO_BOX(combo));
+	switch(active) {
+		case 0: return RIEN;
+		case 1: return PETIT_AU_BOUT_ATTAQUE;
+		case 2: return PETIT_AU_BOUT_DEFENSE;
+		default: {
+				 fprintf(stderr, "Erreur de prime");
+				 return RIEN;
+			 }
+	}
+}
+
+int get_primes_non_multipliables(GtkBuilder * builder, enum prime_non_multipliable ** primes) {
+	GObject * combo_poignee = gtk_builder_get_object(builder, "poignee");
+	GObject * combo_chelem = gtk_builder_get_object(builder, "chelem");
+	gint active_poignee = gtk_combo_box_get_active(GTK_COMBO_BOX(combo_poignee));
+	gint active_chelem = gtk_combo_box_get_active(GTK_COMBO_BOX(combo_chelem));
+
+	int nb_primes = 0;
+	if(active_poignee != 0) 
+		nb_primes++;
+	if(active_chelem != 0)
+		nb_primes++;
+
+	if(nb_primes != 0){
+		size_t i = 0;
+		*primes = malloc(nb_primes * sizeof(enum prime_non_multipliable));
+		switch(active_poignee) {
+			case 1: *primes[i] = SIMPLE_POIGNEE;
+				i++;
+				break;
+			case 2: *primes[i] = DOUBLE_POIGNEE;
+				i++;
+				break;
+			case 3: *primes[i] = TRIPLE_POIGNEE;
+				i++;
+		}
+
+		switch(active_chelem) {
+			case 1: *primes[i] = CHELEM_ANNONCE_PASSE;
+				break;
+			case 2: *primes[i] = CHELEM_ANNONCE_CHUTE;
+				break;
+			case 3: *primes[i] = CHELEM_NON_ANNONCE;
+		}
+	} else {
+		primes = NULL;
+	}
+	return nb_primes;
+}
+
+int get_nb_bouts(GtkBuilder * builder) {
+	return 0;
+}
+
+int get_score(GtkBuilder * builder) {
+	return 0;
+}
+
+int get_preneur(GtkBuilder * builder){
+	return 0;
+}
+
 void gui_nouvelle_donne_creee(struct gui_nouvelle_donne_creee_data *data) {
 	struct partie * partie = *(data->partie);
 	struct donne * donne = malloc(sizeof(struct donne));
-	donne->enchere = PRISE;
-	donne->prime = RIEN;
-	donne->primes = NULL;
-	donne->nb_primes = 0;
-	donne->nb_bouts = 0;
-	donne->score = 0;
-	donne->preneur = 0;
+	donne->enchere = get_enchere(data->builder);
+	donne->prime = get_prime_multipliable(data->builder);
+	donne->nb_primes = get_primes_non_multipliables(data->builder, &(donne->primes));
+	donne->nb_bouts = get_nb_bouts(data->builder);
+	donne->score = get_score(data->builder);
+	donne->preneur = get_preneur(data->builder);
 	donne->donne_suivante = NULL;
 
 	nouvelle_donne(partie, donne);
@@ -82,6 +162,7 @@ void gui_nouvelle_donne(const struct gui_nouvelle_donne_data * data) {
 			n_d_c_data->view = data->view;
 			n_d_c_data->partie = data->partie;
 			n_d_c_data->parent = GTK_WIDGET(window);
+			n_d_c_data->builder = builder;
 			g_signal_connect_swapped(button, "clicked", G_CALLBACK(gui_nouvelle_donne_creee), n_d_c_data);
 		}
 	}
